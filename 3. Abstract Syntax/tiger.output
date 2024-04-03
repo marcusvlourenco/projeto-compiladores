@@ -1,0 +1,3136 @@
+Estado 16 conflitos: 1 de deslocamento/redução
+Estado 20 conflitos: 1 de deslocamento/redução
+
+
+Gramática
+
+    0 $accept: program $end
+
+    1 program: root
+
+    2 root: %empty
+    3     | expre
+
+    4 expre: INT
+    5      | STRING
+    6      | NIL
+    7      | BREAK
+    8      | LPAREN expre_list RPAREN
+    9      | lvalue
+   10      | lvalue ASSIGN expre
+   11      | id LPAREN arg_list RPAREN
+   12      | id LBRACE fieldExpre RBRACE
+   13      | id LBRACK expre RBRACK OF expre
+   14      | expre AND expre
+   15      | expre OR expre
+   16      | expre_opera
+   17      | expre_compa
+   18      | expre_if
+   19      | expre_for
+   20      | expre_while
+   21      | expre_switch
+   22      | expre_let
+
+   23 id: ID
+
+   24 expre_opera: expre PLUS expre
+   25            | expre MINUS expre
+   26            | MINUS expre
+   27            | expre TIMES expre
+   28            | expre DIVIDE expre
+
+   29 expre_compa: expre LT expre
+   30            | expre LE expre
+   31            | expre GT expre
+   32            | expre GE expre
+   33            | expre EQ expre
+   34            | expre NEQ expre
+
+   35 arg_list: %empty
+   36         | expre
+   37         | expre COMMA arg_list
+
+   38 lvalue: id
+   39       | id LBRACK expre RBRACK
+   40       | lvalue DOT id
+   41       | lvalue LBRACK expre RBRACK
+
+   42 fieldExpre: %empty
+   43           | id EQ expre
+   44           | id EQ expre COMMA fieldExpre
+
+   45 expre_list: %empty
+   46           | expre
+   47           | expre SEMICOLON expre_list
+
+   48 expre_if: IF expre THEN expre
+   49         | expre_if ELSE expre
+
+   50 expre_for: FOR id ASSIGN expre TO expre DO expre
+
+   51 expre_while: WHILE expre DO expre
+
+   52 expre_switch: SWITCH op_swi
+
+   53 op_swi: LPAREN var_swi RPAREN LBRACE ops_swi RBRACE
+
+   54 var_swi: INT
+   55        | STRING
+
+   56 ops_swi: CASE var_swi COLON expre BREAK COLON
+   57        | DEFAULT COLON expre SEMICOLON
+
+   58 expre_let: LET dec_list IN expre_list END
+
+   59 dec_list: %empty
+   60         | dec dec_list
+
+   61 dec: fun_dec
+   62    | var_dec
+   63    | ty_dec
+
+   64 fun_dec: FUNCTION id LPAREN ty_field_list RPAREN EQ expre
+   65        | FUNCTION id LPAREN ty_field_list RPAREN COLON id EQ expre
+
+   66 ty_field_list: %empty
+   67              | ty_field
+   68              | ty_field COMMA ty_field_list
+
+   69 ty_field: id COLON id
+
+   70 var_dec: VAR id ASSIGN expre
+   71        | VAR id COLON id ASSIGN expre
+
+   72 ty_dec: TYPE id EQ ty
+
+   73 ty: id
+   74   | LBRACE ty_field_list RBRACE
+   75   | ARRAY OF id
+
+
+Terminais, com as regras onde eles aparecem
+
+    $end (0) 0
+    error (256)
+    ID <sval> (258) 23
+    STRING <sval> (259) 5 55
+    INT <ival> (260) 4 54
+    COMMA (261) 37 44 68
+    COLON (262) 56 57 65 69 71
+    SEMICOLON (263) 47 57
+    LPAREN (264) 8 11 53 64 65
+    RPAREN (265) 8 11 53 64 65
+    LBRACK (266) 13 39 41
+    RBRACK (267) 13 39 41
+    LBRACE (268) 12 53 74
+    RBRACE (269) 12 53 74
+    DOT (270) 40
+    PLUS (271) 24
+    MINUS (272) 25 26
+    TIMES (273) 27
+    DIVIDE (274) 28
+    EQ (275) 33 43 44 64 65 72
+    NEQ (276) 34
+    LT (277) 29
+    LE (278) 30
+    GT (279) 31
+    GE (280) 32
+    AND (281) 14
+    OR (282) 15
+    ASSIGN (283) 10 50 70 71
+    ARRAY (284) 75
+    IF (285) 48
+    THEN (286) 48
+    ELSE (287) 49
+    WHILE (288) 51
+    FOR (289) 50
+    TO (290) 50
+    DO (291) 50 51
+    LET (292) 58
+    IN (293) 58
+    END (294) 58
+    OF (295) 13 75
+    BREAK (296) 7 56
+    NIL (297) 6
+    FUNCTION (298) 64 65
+    VAR (299) 70 71
+    TYPE (300) 72
+    SWITCH (301) 52
+    CASE (302) 56
+    DEFAULT (303) 57
+    UMINUS (304)
+
+
+Não terminais com as regras onde eles aparecem
+
+    $accept (50)
+        à esquerda: 0
+    program <expre> (51)
+        à esquerda: 1
+        à direita: 0
+    root <root> (52)
+        à esquerda: 2 3
+        à direita: 1
+    expre <expre> (53)
+        à esquerda: 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22
+        à direita: 3 10 13 14 15 24 25 26 27 28 29 30 31 32 33 34 36 37 39 41 43 44 46 47 48 49 50 51 56 57 64 65 70 71
+    id <sval> (54)
+        à esquerda: 23
+        à direita: 11 12 13 38 39 40 43 44 50 64 65 69 70 71 72 73 75
+    expre_opera <expre> (55)
+        à esquerda: 24 25 26 27 28
+        à direita: 16
+    expre_compa <expre> (56)
+        à esquerda: 29 30 31 32 33 34
+        à direita: 17
+    arg_list <expre_list> (57)
+        à esquerda: 35 36 37
+        à direita: 11 37
+    lvalue <var> (58)
+        à esquerda: 38 39 40 41
+        à direita: 9 10 40 41
+    fieldExpre <field_expre_list> (59)
+        à esquerda: 42 43 44
+        à direita: 12 44
+    expre_list <expre_list> (60)
+        à esquerda: 45 46 47
+        à direita: 8 47 58
+    expre_if <expre> (61)
+        à esquerda: 48 49
+        à direita: 18 49
+    expre_for <expre> (62)
+        à esquerda: 50
+        à direita: 19
+    expre_while <expre> (63)
+        à esquerda: 51
+        à direita: 20
+    expre_switch <expre> (64)
+        à esquerda: 52
+        à direita: 21
+    op_swi <expre> (65)
+        à esquerda: 53
+        à direita: 52
+    var_swi <expre> (66)
+        à esquerda: 54 55
+        à direita: 53 56
+    ops_swi <expre> (67)
+        à esquerda: 56 57
+        à direita: 53
+    expre_let <expre> (68)
+        à esquerda: 58
+        à direita: 22
+    dec_list <dec_list> (69)
+        à esquerda: 59 60
+        à direita: 58 60
+    dec <dec> (70)
+        à esquerda: 61 62 63
+        à direita: 60
+    fun_dec <fun_dec> (71)
+        à esquerda: 64 65
+        à direita: 61
+    ty_field_list <ty_field_list> (72)
+        à esquerda: 66 67 68
+        à direita: 64 65 68 74
+    ty_field <ty_field> (73)
+        à esquerda: 69
+        à direita: 67 68
+    var_dec <dec> (74)
+        à esquerda: 70 71
+        à direita: 62
+    ty_dec <ty_dec> (75)
+        à esquerda: 72
+        à direita: 63
+    ty <ty> (76)
+        à esquerda: 73 74 75
+        à direita: 72
+
+
+Estado 0
+
+    0 $accept: . program $end
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 2 (root)
+
+    program       ir ao estado 13
+    root          ir ao estado 14
+    expre         ir ao estado 15
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 1
+
+   23 id: ID .
+
+    $padrão  reduzir usando a regra 23 (id)
+
+
+Estado 2
+
+    5 expre: STRING .
+
+    $padrão  reduzir usando a regra 5 (expre)
+
+
+Estado 3
+
+    4 expre: INT .
+
+    $padrão  reduzir usando a regra 4 (expre)
+
+
+Estado 4
+
+    8 expre: LPAREN . expre_list RPAREN
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 45 (expre_list)
+
+    expre         ir ao estado 25
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_list    ir ao estado 26
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 5
+
+   26 expre_opera: MINUS . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 27
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 6
+
+   48 expre_if: IF . expre THEN expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 28
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 7
+
+   51 expre_while: WHILE . expre DO expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 29
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 8
+
+   50 expre_for: FOR . id ASSIGN expre TO expre DO expre
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 30
+
+
+Estado 9
+
+   58 expre_let: LET . dec_list IN expre_list END
+
+    FUNCTION  deslocar, e ir ao estado 31
+    VAR       deslocar, e ir ao estado 32
+    TYPE      deslocar, e ir ao estado 33
+
+    $padrão  reduzir usando a regra 59 (dec_list)
+
+    dec_list  ir ao estado 34
+    dec       ir ao estado 35
+    fun_dec   ir ao estado 36
+    var_dec   ir ao estado 37
+    ty_dec    ir ao estado 38
+
+
+Estado 10
+
+    7 expre: BREAK .
+
+    $padrão  reduzir usando a regra 7 (expre)
+
+
+Estado 11
+
+    6 expre: NIL .
+
+    $padrão  reduzir usando a regra 6 (expre)
+
+
+Estado 12
+
+   52 expre_switch: SWITCH . op_swi
+
+    LPAREN  deslocar, e ir ao estado 39
+
+    op_swi  ir ao estado 40
+
+
+Estado 13
+
+    0 $accept: program . $end
+
+    $end  deslocar, e ir ao estado 41
+
+
+Estado 14
+
+    1 program: root .
+
+    $padrão  reduzir usando a regra 1 (program)
+
+
+Estado 15
+
+    3 root: expre .
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 3 (root)
+
+
+Estado 16
+
+   11 expre: id . LPAREN arg_list RPAREN
+   12      | id . LBRACE fieldExpre RBRACE
+   13      | id . LBRACK expre RBRACK OF expre
+   38 lvalue: id .
+   39       | id . LBRACK expre RBRACK
+
+    LPAREN  deslocar, e ir ao estado 54
+    LBRACK  deslocar, e ir ao estado 55
+    LBRACE  deslocar, e ir ao estado 56
+
+    LBRACK    [reduzir usando a regra 38 (lvalue)]
+    $padrão  reduzir usando a regra 38 (lvalue)
+
+
+Estado 17
+
+   16 expre: expre_opera .
+
+    $padrão  reduzir usando a regra 16 (expre)
+
+
+Estado 18
+
+   17 expre: expre_compa .
+
+    $padrão  reduzir usando a regra 17 (expre)
+
+
+Estado 19
+
+    9 expre: lvalue .
+   10      | lvalue . ASSIGN expre
+   40 lvalue: lvalue . DOT id
+   41       | lvalue . LBRACK expre RBRACK
+
+    LBRACK  deslocar, e ir ao estado 57
+    DOT     deslocar, e ir ao estado 58
+    ASSIGN  deslocar, e ir ao estado 59
+
+    $padrão  reduzir usando a regra 9 (expre)
+
+
+Estado 20
+
+   18 expre: expre_if .
+   49 expre_if: expre_if . ELSE expre
+
+    ELSE  deslocar, e ir ao estado 60
+
+    ELSE      [reduzir usando a regra 18 (expre)]
+    $padrão  reduzir usando a regra 18 (expre)
+
+
+Estado 21
+
+   19 expre: expre_for .
+
+    $padrão  reduzir usando a regra 19 (expre)
+
+
+Estado 22
+
+   20 expre: expre_while .
+
+    $padrão  reduzir usando a regra 20 (expre)
+
+
+Estado 23
+
+   21 expre: expre_switch .
+
+    $padrão  reduzir usando a regra 21 (expre)
+
+
+Estado 24
+
+   22 expre: expre_let .
+
+    $padrão  reduzir usando a regra 22 (expre)
+
+
+Estado 25
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   46 expre_list: expre .
+   47           | expre . SEMICOLON expre_list
+
+    SEMICOLON  deslocar, e ir ao estado 61
+    PLUS       deslocar, e ir ao estado 42
+    MINUS      deslocar, e ir ao estado 43
+    TIMES      deslocar, e ir ao estado 44
+    DIVIDE     deslocar, e ir ao estado 45
+    EQ         deslocar, e ir ao estado 46
+    NEQ        deslocar, e ir ao estado 47
+    LT         deslocar, e ir ao estado 48
+    LE         deslocar, e ir ao estado 49
+    GT         deslocar, e ir ao estado 50
+    GE         deslocar, e ir ao estado 51
+    AND        deslocar, e ir ao estado 52
+    OR         deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 46 (expre_list)
+
+
+Estado 26
+
+    8 expre: LPAREN expre_list . RPAREN
+
+    RPAREN  deslocar, e ir ao estado 62
+
+
+Estado 27
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   26            | MINUS expre .
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    $padrão  reduzir usando a regra 26 (expre_opera)
+
+
+Estado 28
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   48 expre_if: IF expre . THEN expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+    THEN    deslocar, e ir ao estado 63
+
+
+Estado 29
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   51 expre_while: WHILE expre . DO expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+    DO      deslocar, e ir ao estado 64
+
+
+Estado 30
+
+   50 expre_for: FOR id . ASSIGN expre TO expre DO expre
+
+    ASSIGN  deslocar, e ir ao estado 65
+
+
+Estado 31
+
+   64 fun_dec: FUNCTION . id LPAREN ty_field_list RPAREN EQ expre
+   65        | FUNCTION . id LPAREN ty_field_list RPAREN COLON id EQ expre
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 66
+
+
+Estado 32
+
+   70 var_dec: VAR . id ASSIGN expre
+   71        | VAR . id COLON id ASSIGN expre
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 67
+
+
+Estado 33
+
+   72 ty_dec: TYPE . id EQ ty
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 68
+
+
+Estado 34
+
+   58 expre_let: LET dec_list . IN expre_list END
+
+    IN  deslocar, e ir ao estado 69
+
+
+Estado 35
+
+   60 dec_list: dec . dec_list
+
+    FUNCTION  deslocar, e ir ao estado 31
+    VAR       deslocar, e ir ao estado 32
+    TYPE      deslocar, e ir ao estado 33
+
+    $padrão  reduzir usando a regra 59 (dec_list)
+
+    dec_list  ir ao estado 70
+    dec       ir ao estado 35
+    fun_dec   ir ao estado 36
+    var_dec   ir ao estado 37
+    ty_dec    ir ao estado 38
+
+
+Estado 36
+
+   61 dec: fun_dec .
+
+    $padrão  reduzir usando a regra 61 (dec)
+
+
+Estado 37
+
+   62 dec: var_dec .
+
+    $padrão  reduzir usando a regra 62 (dec)
+
+
+Estado 38
+
+   63 dec: ty_dec .
+
+    $padrão  reduzir usando a regra 63 (dec)
+
+
+Estado 39
+
+   53 op_swi: LPAREN . var_swi RPAREN LBRACE ops_swi RBRACE
+
+    STRING  deslocar, e ir ao estado 71
+    INT     deslocar, e ir ao estado 72
+
+    var_swi  ir ao estado 73
+
+
+Estado 40
+
+   52 expre_switch: SWITCH op_swi .
+
+    $padrão  reduzir usando a regra 52 (expre_switch)
+
+
+Estado 41
+
+    0 $accept: program $end .
+
+    $padrão  aceitar
+
+
+Estado 42
+
+   24 expre_opera: expre PLUS . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 74
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 43
+
+   25 expre_opera: expre MINUS . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 75
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 44
+
+   27 expre_opera: expre TIMES . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 76
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 45
+
+   28 expre_opera: expre DIVIDE . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 77
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 46
+
+   33 expre_compa: expre EQ . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 78
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 47
+
+   34 expre_compa: expre NEQ . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 79
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 48
+
+   29 expre_compa: expre LT . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 80
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 49
+
+   30 expre_compa: expre LE . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 81
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 50
+
+   31 expre_compa: expre GT . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 82
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 51
+
+   32 expre_compa: expre GE . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 83
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 52
+
+   14 expre: expre AND . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 84
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 53
+
+   15 expre: expre OR . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 85
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 54
+
+   11 expre: id LPAREN . arg_list RPAREN
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 35 (arg_list)
+
+    expre         ir ao estado 86
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    arg_list      ir ao estado 87
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 55
+
+   13 expre: id LBRACK . expre RBRACK OF expre
+   39 lvalue: id LBRACK . expre RBRACK
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 88
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 56
+
+   12 expre: id LBRACE . fieldExpre RBRACE
+
+    ID  deslocar, e ir ao estado 1
+
+    $padrão  reduzir usando a regra 42 (fieldExpre)
+
+    id          ir ao estado 89
+    fieldExpre  ir ao estado 90
+
+
+Estado 57
+
+   41 lvalue: lvalue LBRACK . expre RBRACK
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 91
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 58
+
+   40 lvalue: lvalue DOT . id
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 92
+
+
+Estado 59
+
+   10 expre: lvalue ASSIGN . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 93
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 60
+
+   49 expre_if: expre_if ELSE . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 94
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 61
+
+   47 expre_list: expre SEMICOLON . expre_list
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 45 (expre_list)
+
+    expre         ir ao estado 25
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_list    ir ao estado 95
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 62
+
+    8 expre: LPAREN expre_list RPAREN .
+
+    $padrão  reduzir usando a regra 8 (expre)
+
+
+Estado 63
+
+   48 expre_if: IF expre THEN . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 96
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 64
+
+   51 expre_while: WHILE expre DO . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 97
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 65
+
+   50 expre_for: FOR id ASSIGN . expre TO expre DO expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 98
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 66
+
+   64 fun_dec: FUNCTION id . LPAREN ty_field_list RPAREN EQ expre
+   65        | FUNCTION id . LPAREN ty_field_list RPAREN COLON id EQ expre
+
+    LPAREN  deslocar, e ir ao estado 99
+
+
+Estado 67
+
+   70 var_dec: VAR id . ASSIGN expre
+   71        | VAR id . COLON id ASSIGN expre
+
+    COLON   deslocar, e ir ao estado 100
+    ASSIGN  deslocar, e ir ao estado 101
+
+
+Estado 68
+
+   72 ty_dec: TYPE id . EQ ty
+
+    EQ  deslocar, e ir ao estado 102
+
+
+Estado 69
+
+   58 expre_let: LET dec_list IN . expre_list END
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 45 (expre_list)
+
+    expre         ir ao estado 25
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_list    ir ao estado 103
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 70
+
+   60 dec_list: dec dec_list .
+
+    $padrão  reduzir usando a regra 60 (dec_list)
+
+
+Estado 71
+
+   55 var_swi: STRING .
+
+    $padrão  reduzir usando a regra 55 (var_swi)
+
+
+Estado 72
+
+   54 var_swi: INT .
+
+    $padrão  reduzir usando a regra 54 (var_swi)
+
+
+Estado 73
+
+   53 op_swi: LPAREN var_swi . RPAREN LBRACE ops_swi RBRACE
+
+    RPAREN  deslocar, e ir ao estado 104
+
+
+Estado 74
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   24            | expre PLUS expre .
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    $padrão  reduzir usando a regra 24 (expre_opera)
+
+
+Estado 75
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   25            | expre MINUS expre .
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    $padrão  reduzir usando a regra 25 (expre_opera)
+
+
+Estado 76
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   27            | expre TIMES expre .
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    $padrão  reduzir usando a regra 27 (expre_opera)
+
+
+Estado 77
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   28            | expre DIVIDE expre .
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    $padrão  reduzir usando a regra 28 (expre_opera)
+
+
+Estado 78
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   33            | expre EQ expre .
+   34            | expre . NEQ expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    $padrão  reduzir usando a regra 33 (expre_compa)
+
+
+Estado 79
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   34            | expre NEQ expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    $padrão  reduzir usando a regra 34 (expre_compa)
+
+
+Estado 80
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   29            | expre LT expre .
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    $padrão  reduzir usando a regra 29 (expre_compa)
+
+
+Estado 81
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   30            | expre LE expre .
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    $padrão  reduzir usando a regra 30 (expre_compa)
+
+
+Estado 82
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   31            | expre GT expre .
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    $padrão  reduzir usando a regra 31 (expre_compa)
+
+
+Estado 83
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   32            | expre GE expre .
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    EQ   erro (não associativo)
+    NEQ  erro (não associativo)
+    LT   erro (não associativo)
+    LE   erro (não associativo)
+    GT   erro (não associativo)
+    GE   erro (não associativo)
+
+    $padrão  reduzir usando a regra 32 (expre_compa)
+
+
+Estado 84
+
+   14 expre: expre . AND expre
+   14      | expre AND expre .
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    $padrão  reduzir usando a regra 14 (expre)
+
+
+Estado 85
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   15      | expre OR expre .
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    $padrão  reduzir usando a regra 15 (expre)
+
+
+Estado 86
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   36 arg_list: expre .
+   37         | expre . COMMA arg_list
+
+    COMMA   deslocar, e ir ao estado 105
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 36 (arg_list)
+
+
+Estado 87
+
+   11 expre: id LPAREN arg_list . RPAREN
+
+    RPAREN  deslocar, e ir ao estado 106
+
+
+Estado 88
+
+   13 expre: id LBRACK expre . RBRACK OF expre
+   14      | expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   39 lvalue: id LBRACK expre . RBRACK
+
+    RBRACK  deslocar, e ir ao estado 107
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+
+Estado 89
+
+   43 fieldExpre: id . EQ expre
+   44           | id . EQ expre COMMA fieldExpre
+
+    EQ  deslocar, e ir ao estado 108
+
+
+Estado 90
+
+   12 expre: id LBRACE fieldExpre . RBRACE
+
+    RBRACE  deslocar, e ir ao estado 109
+
+
+Estado 91
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   41 lvalue: lvalue LBRACK expre . RBRACK
+
+    RBRACK  deslocar, e ir ao estado 110
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+
+Estado 92
+
+   40 lvalue: lvalue DOT id .
+
+    $padrão  reduzir usando a regra 40 (lvalue)
+
+
+Estado 93
+
+   10 expre: lvalue ASSIGN expre .
+   14      | expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 10 (expre)
+
+
+Estado 94
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   49 expre_if: expre_if ELSE expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 49 (expre_if)
+
+
+Estado 95
+
+   47 expre_list: expre SEMICOLON expre_list .
+
+    $padrão  reduzir usando a regra 47 (expre_list)
+
+
+Estado 96
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   48 expre_if: IF expre THEN expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 48 (expre_if)
+
+
+Estado 97
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   51 expre_while: WHILE expre DO expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 51 (expre_while)
+
+
+Estado 98
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   50 expre_for: FOR id ASSIGN expre . TO expre DO expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+    TO      deslocar, e ir ao estado 111
+
+
+Estado 99
+
+   64 fun_dec: FUNCTION id LPAREN . ty_field_list RPAREN EQ expre
+   65        | FUNCTION id LPAREN . ty_field_list RPAREN COLON id EQ expre
+
+    ID  deslocar, e ir ao estado 1
+
+    $padrão  reduzir usando a regra 66 (ty_field_list)
+
+    id             ir ao estado 112
+    ty_field_list  ir ao estado 113
+    ty_field       ir ao estado 114
+
+
+Estado 100
+
+   71 var_dec: VAR id COLON . id ASSIGN expre
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 115
+
+
+Estado 101
+
+   70 var_dec: VAR id ASSIGN . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 116
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 102
+
+   72 ty_dec: TYPE id EQ . ty
+
+    ID      deslocar, e ir ao estado 1
+    LBRACE  deslocar, e ir ao estado 117
+    ARRAY   deslocar, e ir ao estado 118
+
+    id  ir ao estado 119
+    ty  ir ao estado 120
+
+
+Estado 103
+
+   58 expre_let: LET dec_list IN expre_list . END
+
+    END  deslocar, e ir ao estado 121
+
+
+Estado 104
+
+   53 op_swi: LPAREN var_swi RPAREN . LBRACE ops_swi RBRACE
+
+    LBRACE  deslocar, e ir ao estado 122
+
+
+Estado 105
+
+   37 arg_list: expre COMMA . arg_list
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 35 (arg_list)
+
+    expre         ir ao estado 86
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    arg_list      ir ao estado 123
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 106
+
+   11 expre: id LPAREN arg_list RPAREN .
+
+    $padrão  reduzir usando a regra 11 (expre)
+
+
+Estado 107
+
+   13 expre: id LBRACK expre RBRACK . OF expre
+   39 lvalue: id LBRACK expre RBRACK .
+
+    OF  deslocar, e ir ao estado 124
+
+    $padrão  reduzir usando a regra 39 (lvalue)
+
+
+Estado 108
+
+   43 fieldExpre: id EQ . expre
+   44           | id EQ . expre COMMA fieldExpre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 125
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 109
+
+   12 expre: id LBRACE fieldExpre RBRACE .
+
+    $padrão  reduzir usando a regra 12 (expre)
+
+
+Estado 110
+
+   41 lvalue: lvalue LBRACK expre RBRACK .
+
+    $padrão  reduzir usando a regra 41 (lvalue)
+
+
+Estado 111
+
+   50 expre_for: FOR id ASSIGN expre TO . expre DO expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 126
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 112
+
+   69 ty_field: id . COLON id
+
+    COLON  deslocar, e ir ao estado 127
+
+
+Estado 113
+
+   64 fun_dec: FUNCTION id LPAREN ty_field_list . RPAREN EQ expre
+   65        | FUNCTION id LPAREN ty_field_list . RPAREN COLON id EQ expre
+
+    RPAREN  deslocar, e ir ao estado 128
+
+
+Estado 114
+
+   67 ty_field_list: ty_field .
+   68              | ty_field . COMMA ty_field_list
+
+    COMMA  deslocar, e ir ao estado 129
+
+    $padrão  reduzir usando a regra 67 (ty_field_list)
+
+
+Estado 115
+
+   71 var_dec: VAR id COLON id . ASSIGN expre
+
+    ASSIGN  deslocar, e ir ao estado 130
+
+
+Estado 116
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   70 var_dec: VAR id ASSIGN expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 70 (var_dec)
+
+
+Estado 117
+
+   74 ty: LBRACE . ty_field_list RBRACE
+
+    ID  deslocar, e ir ao estado 1
+
+    $padrão  reduzir usando a regra 66 (ty_field_list)
+
+    id             ir ao estado 112
+    ty_field_list  ir ao estado 131
+    ty_field       ir ao estado 114
+
+
+Estado 118
+
+   75 ty: ARRAY . OF id
+
+    OF  deslocar, e ir ao estado 132
+
+
+Estado 119
+
+   73 ty: id .
+
+    $padrão  reduzir usando a regra 73 (ty)
+
+
+Estado 120
+
+   72 ty_dec: TYPE id EQ ty .
+
+    $padrão  reduzir usando a regra 72 (ty_dec)
+
+
+Estado 121
+
+   58 expre_let: LET dec_list IN expre_list END .
+
+    $padrão  reduzir usando a regra 58 (expre_let)
+
+
+Estado 122
+
+   53 op_swi: LPAREN var_swi RPAREN LBRACE . ops_swi RBRACE
+
+    CASE     deslocar, e ir ao estado 133
+    DEFAULT  deslocar, e ir ao estado 134
+
+    ops_swi  ir ao estado 135
+
+
+Estado 123
+
+   37 arg_list: expre COMMA arg_list .
+
+    $padrão  reduzir usando a regra 37 (arg_list)
+
+
+Estado 124
+
+   13 expre: id LBRACK expre RBRACK OF . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 136
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 125
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   43 fieldExpre: id EQ expre .
+   44           | id EQ expre . COMMA fieldExpre
+
+    COMMA   deslocar, e ir ao estado 137
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 43 (fieldExpre)
+
+
+Estado 126
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   50 expre_for: FOR id ASSIGN expre TO expre . DO expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+    DO      deslocar, e ir ao estado 138
+
+
+Estado 127
+
+   69 ty_field: id COLON . id
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 139
+
+
+Estado 128
+
+   64 fun_dec: FUNCTION id LPAREN ty_field_list RPAREN . EQ expre
+   65        | FUNCTION id LPAREN ty_field_list RPAREN . COLON id EQ expre
+
+    COLON  deslocar, e ir ao estado 140
+    EQ     deslocar, e ir ao estado 141
+
+
+Estado 129
+
+   68 ty_field_list: ty_field COMMA . ty_field_list
+
+    ID  deslocar, e ir ao estado 1
+
+    $padrão  reduzir usando a regra 66 (ty_field_list)
+
+    id             ir ao estado 112
+    ty_field_list  ir ao estado 142
+    ty_field       ir ao estado 114
+
+
+Estado 130
+
+   71 var_dec: VAR id COLON id ASSIGN . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 143
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 131
+
+   74 ty: LBRACE ty_field_list . RBRACE
+
+    RBRACE  deslocar, e ir ao estado 144
+
+
+Estado 132
+
+   75 ty: ARRAY OF . id
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 145
+
+
+Estado 133
+
+   56 ops_swi: CASE . var_swi COLON expre BREAK COLON
+
+    STRING  deslocar, e ir ao estado 71
+    INT     deslocar, e ir ao estado 72
+
+    var_swi  ir ao estado 146
+
+
+Estado 134
+
+   57 ops_swi: DEFAULT . COLON expre SEMICOLON
+
+    COLON  deslocar, e ir ao estado 147
+
+
+Estado 135
+
+   53 op_swi: LPAREN var_swi RPAREN LBRACE ops_swi . RBRACE
+
+    RBRACE  deslocar, e ir ao estado 148
+
+
+Estado 136
+
+   13 expre: id LBRACK expre RBRACK OF expre .
+   14      | expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 13 (expre)
+
+
+Estado 137
+
+   44 fieldExpre: id EQ expre COMMA . fieldExpre
+
+    ID  deslocar, e ir ao estado 1
+
+    $padrão  reduzir usando a regra 42 (fieldExpre)
+
+    id          ir ao estado 89
+    fieldExpre  ir ao estado 149
+
+
+Estado 138
+
+   50 expre_for: FOR id ASSIGN expre TO expre DO . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 150
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 139
+
+   69 ty_field: id COLON id .
+
+    $padrão  reduzir usando a regra 69 (ty_field)
+
+
+Estado 140
+
+   65 fun_dec: FUNCTION id LPAREN ty_field_list RPAREN COLON . id EQ expre
+
+    ID  deslocar, e ir ao estado 1
+
+    id  ir ao estado 151
+
+
+Estado 141
+
+   64 fun_dec: FUNCTION id LPAREN ty_field_list RPAREN EQ . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 152
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 142
+
+   68 ty_field_list: ty_field COMMA ty_field_list .
+
+    $padrão  reduzir usando a regra 68 (ty_field_list)
+
+
+Estado 143
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   71 var_dec: VAR id COLON id ASSIGN expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 71 (var_dec)
+
+
+Estado 144
+
+   74 ty: LBRACE ty_field_list RBRACE .
+
+    $padrão  reduzir usando a regra 74 (ty)
+
+
+Estado 145
+
+   75 ty: ARRAY OF id .
+
+    $padrão  reduzir usando a regra 75 (ty)
+
+
+Estado 146
+
+   56 ops_swi: CASE var_swi . COLON expre BREAK COLON
+
+    COLON  deslocar, e ir ao estado 153
+
+
+Estado 147
+
+   57 ops_swi: DEFAULT COLON . expre SEMICOLON
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 154
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 148
+
+   53 op_swi: LPAREN var_swi RPAREN LBRACE ops_swi RBRACE .
+
+    $padrão  reduzir usando a regra 53 (op_swi)
+
+
+Estado 149
+
+   44 fieldExpre: id EQ expre COMMA fieldExpre .
+
+    $padrão  reduzir usando a regra 44 (fieldExpre)
+
+
+Estado 150
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   50 expre_for: FOR id ASSIGN expre TO expre DO expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 50 (expre_for)
+
+
+Estado 151
+
+   65 fun_dec: FUNCTION id LPAREN ty_field_list RPAREN COLON id . EQ expre
+
+    EQ  deslocar, e ir ao estado 155
+
+
+Estado 152
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   64 fun_dec: FUNCTION id LPAREN ty_field_list RPAREN EQ expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 64 (fun_dec)
+
+
+Estado 153
+
+   56 ops_swi: CASE var_swi COLON . expre BREAK COLON
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 156
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 154
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   57 ops_swi: DEFAULT COLON expre . SEMICOLON
+
+    SEMICOLON  deslocar, e ir ao estado 157
+    PLUS       deslocar, e ir ao estado 42
+    MINUS      deslocar, e ir ao estado 43
+    TIMES      deslocar, e ir ao estado 44
+    DIVIDE     deslocar, e ir ao estado 45
+    EQ         deslocar, e ir ao estado 46
+    NEQ        deslocar, e ir ao estado 47
+    LT         deslocar, e ir ao estado 48
+    LE         deslocar, e ir ao estado 49
+    GT         deslocar, e ir ao estado 50
+    GE         deslocar, e ir ao estado 51
+    AND        deslocar, e ir ao estado 52
+    OR         deslocar, e ir ao estado 53
+
+
+Estado 155
+
+   65 fun_dec: FUNCTION id LPAREN ty_field_list RPAREN COLON id EQ . expre
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    expre         ir ao estado 158
+    id            ir ao estado 16
+    expre_opera   ir ao estado 17
+    expre_compa   ir ao estado 18
+    lvalue        ir ao estado 19
+    expre_if      ir ao estado 20
+    expre_for     ir ao estado 21
+    expre_while   ir ao estado 22
+    expre_switch  ir ao estado 23
+    expre_let     ir ao estado 24
+
+
+Estado 156
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   56 ops_swi: CASE var_swi COLON expre . BREAK COLON
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+    BREAK   deslocar, e ir ao estado 159
+
+
+Estado 157
+
+   57 ops_swi: DEFAULT COLON expre SEMICOLON .
+
+    $padrão  reduzir usando a regra 57 (ops_swi)
+
+
+Estado 158
+
+   14 expre: expre . AND expre
+   15      | expre . OR expre
+   24 expre_opera: expre . PLUS expre
+   25            | expre . MINUS expre
+   27            | expre . TIMES expre
+   28            | expre . DIVIDE expre
+   29 expre_compa: expre . LT expre
+   30            | expre . LE expre
+   31            | expre . GT expre
+   32            | expre . GE expre
+   33            | expre . EQ expre
+   34            | expre . NEQ expre
+   65 fun_dec: FUNCTION id LPAREN ty_field_list RPAREN COLON id EQ expre .
+
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    TIMES   deslocar, e ir ao estado 44
+    DIVIDE  deslocar, e ir ao estado 45
+    EQ      deslocar, e ir ao estado 46
+    NEQ     deslocar, e ir ao estado 47
+    LT      deslocar, e ir ao estado 48
+    LE      deslocar, e ir ao estado 49
+    GT      deslocar, e ir ao estado 50
+    GE      deslocar, e ir ao estado 51
+    AND     deslocar, e ir ao estado 52
+    OR      deslocar, e ir ao estado 53
+
+    $padrão  reduzir usando a regra 65 (fun_dec)
+
+
+Estado 159
+
+   56 ops_swi: CASE var_swi COLON expre BREAK . COLON
+
+    COLON  deslocar, e ir ao estado 160
+
+
+Estado 160
+
+   56 ops_swi: CASE var_swi COLON expre BREAK COLON .
+
+    $padrão  reduzir usando a regra 56 (ops_swi)
